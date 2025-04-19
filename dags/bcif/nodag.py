@@ -19,7 +19,7 @@ if __name__ == "__main__":
     input_hash = bool(params.settings.input_hash)
     batch_size = int(params.settings.batch_size)
     nfiles = int(params.settings.nfiles)
-    config_path = params.settings.config_path
+    config_path = params.paths.config_path
     list_file_base = params.paths.listFileBase
     output_path = params.paths.outputPath
     pdb_remote_path = params.urls.pdbRemotePath
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     splitRemoteTaskLists(pdb_holdings_path, csm_holdings_path, list_file_base, output_path, incremental_update, out_file_suffix, num_sublist_files, config_path, output_content_type, output_hash)
 
-    filepaths = getListFiles(list_file_base)
+    filepaths = getListFiles(list_file_base, "pdb")
 
     for filepath in glob.glob(os.path.join(list_file_base, "pdbx_core_ids-*.txt")):
         list_file_name = os.path.basename(filepath)

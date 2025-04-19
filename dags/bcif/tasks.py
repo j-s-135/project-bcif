@@ -12,7 +12,7 @@ start_task = EmptyOperator(task_id="start")
 
 @task(task_id="status_start")
 def status_start(listFileBase: str) -> bool:
-    return status_start_(listFileBase)
+    return statusStart(listFileBase)
 
 
 @task.branch(task_id="branch_task")
@@ -21,7 +21,7 @@ def branching(r: int) -> str:
 
 
 @task_group
-def local_branch(*args, **kwargs):
+def local_branch(params):
 
     @task(task_id="make_dirs")
     def make_dirs(listFileBase: str, updateBase: str, outputContentType: bool) -> bool:
@@ -32,8 +32,8 @@ def local_branch(*args, **kwargs):
         return splitRemoteTaskLists(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, updateBase, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash)
 
     @task(task_id="get_list_files")
-    def get_list_files(listFileBase: str, result: bool):
-        return getListFiles(listFileBase)
+    def get_list_files(listFileBase: str, contentType: str, result: bool):
+        return getListFiles(listFileBase, contentType)
 
     @task(task_id="compute_bcif")
     def compute_bcif(listFileBase: str, listFileName: str, remotePath: str, outputPath: str, outfileSuffix: str, contentType: str, outputContentType: bool, outputHash: bool, inputHash: bool, batchSize: int, nfiles: int):
@@ -51,32 +51,35 @@ def local_branch(*args, **kwargs):
     def tasks_done(result: bool) -> bool:
         return tasksDone()
 
-    listFileBase = kwargs['listFileBase']
-    updateBase = kwargs['outputPath']
-    pdbRemotePath = kwargs['pdbRemotePath']
-    csmRemotePath = kwargs['csmRemotePath']
-    pdbHoldingsFilePath = kwargs['pdbHoldingsFilePath']
-    csmHoldingsFilePath = kwargs['csmHoldingsFilePath']
-    incrementalUpdate = bool(kwargs['incremental_update'])
-    outfileSuffix = kwargs['out_file_suffix']
-    numSublistFiles = int(kwargs['num_sublist_files'])
-    configPath = kwargs['config_path']
-    outputContentType = bool(kwargs['output_content_type'])
-    outputHash = bool(kwargs['output_hash'])
+    listFileBase = params.paths.listFileBase
+    updateBase = params.paths.outputPath
+    configPath = params.paths.config_path
+    pdbRemotePath = params.urls.pdbRemotePath
+    csmRemotePath = params.urls.csmRemotePath
+    pdbHoldingsFilePath = params.urls.pdbHoldingsFilePath
+    csmHoldingsFilePath = params.urls.csmHoldingsFilePath
+    incrementalUpdate = bool(params.settings.incremental_update)
+    outfileSuffix = params.settings.out_file_suffix
+    numSublistFiles = int(params.settings.num_sublist_files)
+    outputContentType = bool(params.settings.output_content_type)
+    outputHash = bool(params.settings.output_hash)
+    inputHash = bool(params.settings.input_hash)
+    batchSize = int(params.settings.batch_size)
+    nfiles = int(params.settings.nfiles)
 
     result = make_dirs(listFileBase, updateBase, outputContentType)
 
-    result = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, updateBase, incrementalUPdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result)
+    result = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, updateBase, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result)
 
     contentType = "pdb"
     remotePath = pdbRemotePath
     filepaths = get_list_files(listFileBase, contentType, result)
-    result = compute_bcif.partial(listFileBase, remotePath, outputPath, outfileSuffix, contentType, outputContentType, outputHash, inputHash, batchSize, nfiles).expand(listFileName=filepaths)
+    result = compute_bcif.partial(listFileBase=listFileBase, remotePath=remotePath, outputPath=updateBase, outfileSuffix=outfileSuffix, contentType=contentType, outputContentType=outputContentType, outputHash=outputHash, inputHash=inputHash, batchSize=batchSize, nfiles=nfiles).expand(listFileName=filepaths)
 
     contentType = "csm"
     remotePath = csmRemotePath
     filepaths = get_list_files(listFileBase, contentType, result)
-    result = compute_bcif.partial(listFileBase, remotePath, outputPath, outfileSuffix, contentType, outputContentType, outputHash, inputHash, batchSize, nfiles).expand(listFileName=filepaths)
+    result = compute_bcif.partial(listFileBase=listFileBase, remotePath=remotePath, outputPath=updateBase, outfileSuffix=outfileSuffix, contentType=contentType, outputContentType=outputContentType, outputHash=outputHash, inputHash=inputHash, batchSize=batchSize, nfiles=nfiles).expand(listFileName=filepaths)
 
     result = validate_output(listFileBase, updateBase, outfileSuffix, outputContentType, outputHash, result)
 

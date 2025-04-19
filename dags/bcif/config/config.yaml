@@ -2,21 +2,21 @@ settings:
     route: 0 # 0 local, 1 nersc, 2 kubernetes
     incremental_update: True
     out_file_suffix: .bcif.gz
-    num_sublist_files: 4
+    num_sublist_files: 1
     output_content_type: True
     output_hash: True
     input_hash: True
     batch_size: 1
     nfiles: 100
-    config_path: /home/ubuntu/project-bcif/dags/bcif/config/bcifConfig.yml
 paths:
     listFileBase: /mnt/vdb1/in
     outputPath: /mnt/vdb1/out
+    config_path: /home/ubuntu/project-bcif/dags/bcif/config/bcifConfig.yml
 urls:
     pdbRemotePath: http://prereleaseftp-east.rcsb.org/pdb/data/structures/divided/mmCIF/
-    csmRemotePath: http://computed-models-east.rcsb.org/staging/
+    csmRemotePath: http://computed-models-external-east.rcsb.org/staging/
     ihmRemotePath: http://prereleaseftp-east.rcsb.org/pdb_ihm/data/entries
     pdbHoldingsFilePath: http://prereleaseftp-east.rcsb.org/pdb/holdings/released_structures_last_modified_dates.json.gz
-    csmHoldingsFilePath: http://computed-models-east.rcsb.org/staging/holdings/computed-models-holdings-list.json
+    csmHoldingsFilePath: http://computed-models-external-east.rcsb.org/staging/holdings/computed-models-holdings-list.json
 
 
