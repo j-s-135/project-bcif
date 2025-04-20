@@ -11,7 +11,7 @@ settings:
 paths:
     listFileBase: /mnt/vdb1/in
     outputPath: /mnt/vdb1/out
-    config_path: /home/ubuntu/project-bcif/dags/bcif/config/bcifConfig.yml
+    config_path: /mnt/vdb1/bcifConfig.yml
 urls:
     pdbRemotePath: http://prereleaseftp-east.rcsb.org/pdb/data/structures/divided/mmCIF/
     csmRemotePath: http://computed-models-external-east.rcsb.org/staging/

@@ -98,6 +98,10 @@ def splitRemoteTaskLists(
         outputContentType,
         outputHash,
     )
+    if result1:
+        return True
+    return False
+    """"
     holdingsFilePath = csmHoldingsFilePath
     databaseName = "pdbx_comp_model_core"
     result2 = splitRemoteTaskList(
@@ -120,6 +124,7 @@ def splitRemoteTaskLists(
     if result1 or result2:
         return True
     return False
+    """
 
 
 def splitRemoteTaskList(
@@ -147,8 +152,24 @@ def splitRemoteTaskList(
     outHash = ""
     if outputHash:
         outHash = "--prepend_output_hash"
-    cmd = f"python3 -m rcsb.db.cli.RepoLoadExec --op {op} --database {databaseName} --load_file_list_dir {loadFileListDir} --holdings_file_path {holdingsFilePath} --num_sublists {numSublistFiles} --target_file_dir {targetFileDir} --target_file_suffix {outfileSuffix} --config_path {configPath} {incremental} {outContentType} {outHash}"
+    options = [
+        "python3 -m rcsb.db.cli.RepoLoadExec",
+        f"--op {op}",
+        f"--database {databaseName}",
+        f"--load_file_list_dir {loadFileListDir}",
+        f"--holdings_file_path {holdingsFilePath}",
+        f"--num_sublists {numSublistFiles}",
+        f"--target_file_dir {targetFileDir}",
+        f"--target_file_suffix {outfileSuffix}",
+        f"--config_path {configPath}",
+        f"{incremental}",
+        f"{outContentType}",
+        f"{outHash}"
+    ]
+    logger.info(options)
+    cmd = " ".join(options)
     status = os.system(cmd)
+    logger.info(status)
     if status == 0:
         return True
     return False

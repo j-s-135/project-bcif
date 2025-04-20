@@ -79,8 +79,11 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - /mnt/vdb1/in:/mnt/vdb1/in
     - /mnt/vdb1/out:/mnt/vdb1/out
+    - /mnt/vdb1:/mnt/vdb1
     - ${AIRFLOW_PROJ_DIR:-.}/lists:/lists
     - ${AIRFLOW_PROJ_DIR:-.}/sfapi:/sfapi
+    - ${AIRFLOW_PROJ_DIR:-.}/py-rcsb_workflow:/py-rcsb_workflow
+    - ${AIRFLOW_PROJ_DIR:-.}/py-rcsb_db:/py-rcsb_db
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
