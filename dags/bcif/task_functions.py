@@ -24,6 +24,7 @@ import logging
 from typing import List
 import time
 import requests
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -98,10 +99,6 @@ def splitRemoteTaskLists(
         outputContentType,
         outputHash,
     )
-    if result1:
-        return True
-    return False
-    """"
     holdingsFilePath = csmHoldingsFilePath
     databaseName = "pdbx_comp_model_core"
     result2 = splitRemoteTaskList(
@@ -124,7 +121,6 @@ def splitRemoteTaskLists(
     if result1 or result2:
         return True
     return False
-    """
 
 
 def splitRemoteTaskList(
@@ -178,11 +174,18 @@ def splitRemoteTaskList(
 def getListFiles(listFileBase: str, contentType: str) -> list:
     filepaths = []
     if contentType == "pdb":
-        for filepath in glob.glob(os.path.join(listFileBase, "pdbx_core_ids-*.txt")):
-            filepaths.append(filepath)
+        files = os.listdir(listFileBase)
+        for filename in files:
+            if re.match(r"pdbx_core_ids-\d+.txt", filename):
+                filepath = os.path.join(listFileBase, filename)
+                filepaths.append(filepath)
     elif contentType == "csm":
-        for filepath in glob.glob(os.path.join(listFileBase, "pdbx_comp_model_core_ids-*.txt")):
-            filepaths.append(filepath)
+        files = os.listdir(listFileBase)
+        for filename in files:
+            if re.match(r"pdbx_comp_model_core_ids-\d+.txt", filename):
+                filepath = os.path.join(listFileBase, filename)
+                filepaths.append(filepath)
+    logger.info("found %d file paths", len(filepaths))
     return filepaths
 
 
@@ -199,6 +202,10 @@ def computeBcif(
     batchSize,
     nfiles,
 ) -> bool:
+    if isinstance(listFileName, list):
+        if len(listFileName) == 0:
+            return False
+        listFileName = listFileName[0]
     outContentType = ""
     outHash = ""
     inHash = ""
@@ -222,8 +229,10 @@ def computeBcif(
         f"{outHash}",
         f"{inHash}",
     ]
+    logger.info(options)
     cmd = " ".join(options)
     status = os.system(cmd)
+    logger.info("command completed with status %d" % int(status))
     if status == 0:
         return True
     return False
@@ -340,9 +349,6 @@ def statusComplete(listFileBase: str) -> bool:
     """
     statusCompleteFile = "status.complete"
     completeFile = os.path.join(listFileBase, statusCompleteFile)
-    dirs = os.path.dirname(completeFile)
-    if not os.path.exists(dirs):
-        os.makedirs(dirs, mode=0o777)
     with open(completeFile, "w", encoding="utf-8") as w:
         w.write(
             "Binary cif run completed successfully at %s."

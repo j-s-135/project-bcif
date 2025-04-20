@@ -7,16 +7,17 @@ settings:
     output_hash: True
     input_hash: True
     batch_size: 1
-    nfiles: 100
+    nfiles: 3
+    sequential: True # for airflow sequential executor
 paths:
-    listFileBase: /mnt/vdb1/in
-    outputPath: /mnt/vdb1/out
-    config_path: /mnt/vdb1/bcifConfig.yml
+    listFileBase: /Users/jamessmith/airflow/in
+    outputPath: /Users/jamessmith/airflow/out
+    config_path: /Users/jamessmith/airflow/config/bcifConfig.yml
 urls:
-    pdbRemotePath: http://prereleaseftp-east.rcsb.org/pdb/data/structures/divided/mmCIF/
+    pdbRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb/data/structures/divided/mmCIF/
     csmRemotePath: http://computed-models-external-east.rcsb.org/staging/
-    ihmRemotePath: http://prereleaseftp-east.rcsb.org/pdb_ihm/data/entries
-    pdbHoldingsFilePath: http://prereleaseftp-east.rcsb.org/pdb/holdings/released_structures_last_modified_dates.json.gz
+    ihmRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb_ihm/data/entries
+    pdbHoldingsFilePath: http://prereleaseftp-external-east.rcsb.org/pdb/holdings/released_structures_last_modified_dates.json.gz
     csmHoldingsFilePath: http://computed-models-external-east.rcsb.org/staging/holdings/computed-models-holdings-list.json
 
 
