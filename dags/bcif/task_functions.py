@@ -15,15 +15,11 @@ __license__ = "Apache 2.0"
 
 import multiprocessing
 import os
-import shutil
 import glob
 import pathlib
-import tempfile
 import datetime
 import logging
-from typing import List
 import time
-import requests
 import re
 
 logger = logging.getLogger(__name__)
@@ -41,18 +37,18 @@ def statusStart(listFileBase: str) -> bool:
 
 
 def makeDirs(
-    listFileBase: str, updateBase: str, outputContentType: bool
+    listFileBase: str, outputPath: str, outputContentType: bool
 ) -> bool:
     try:
         if not os.path.exists(listFileBase):
             os.mkdir(listFileBase)
             os.chmod(listFileBase, 0o777)
-        if not os.path.exists(updateBase):
-            os.mkdir(updateBase)
-            os.chmod(updateBase, 0o777)
+        if not os.path.exists(outputPath):
+            os.mkdir(outputPath)
+            os.chmod(outputPath, 0o777)
         if outputContentType:
             for contentType in ["pdb", "csm"]:
-                path = os.path.join(updateBase, contentType)
+                path = os.path.join(outputPath, contentType)
                 if not os.path.exists(path):
                     os.mkdir(path)
                     os.chmod(path, 0o777)
@@ -76,8 +72,8 @@ def branching_(r: int) -> str:
 def splitRemoteTaskLists(
     pdbHoldingsFilePath: str,
     csmHoldingsFilePath: str,
-    loadFileListDir: str,
-    targetFileDir: str,
+    listFileBase: str,
+    outputPath: str,
     incrementalUpdate: bool,
     outfileSuffix: str,
     numSublistFiles: int,
@@ -88,9 +84,9 @@ def splitRemoteTaskLists(
     holdingsFilePath = pdbHoldingsFilePath
     databaseName = "pdbx_core"
     result1 = splitRemoteTaskList(
-        loadFileListDir,
+        listFileBase,
         holdingsFilePath,
-        targetFileDir,
+        outputPath,
         databaseName,
         incrementalUpdate,
         outfileSuffix,
@@ -102,9 +98,9 @@ def splitRemoteTaskLists(
     holdingsFilePath = csmHoldingsFilePath
     databaseName = "pdbx_comp_model_core"
     result2 = splitRemoteTaskList(
-        loadFileListDir,
+        listFileBase,
         holdingsFilePath,
-        targetFileDir,
+        outputPath,
         databaseName,
         incrementalUpdate,
         outfileSuffix,
@@ -124,9 +120,9 @@ def splitRemoteTaskLists(
 
 
 def splitRemoteTaskList(
-    loadFileListDir: str,
+    listFileBase: str,
     holdingsFilePath: str,
-    targetFileDir: str,
+    outputPath: str,
     databaseName: str,
     incrementalUpdate: bool,
     outfileSuffix: str,
@@ -152,10 +148,10 @@ def splitRemoteTaskList(
         "python3 -m rcsb.db.cli.RepoLoadExec",
         f"--op {op}",
         f"--database {databaseName}",
-        f"--load_file_list_dir {loadFileListDir}",
+        f"--load_file_list_dir {listFileBase}",
         f"--holdings_file_path {holdingsFilePath}",
         f"--num_sublists {numSublistFiles}",
-        f"--target_file_dir {targetFileDir}",
+        f"--target_file_dir {outputPath}",
         f"--target_file_suffix {outfileSuffix}",
         f"--config_path {configPath}",
         f"{incremental}",
@@ -241,7 +237,7 @@ def computeBcif(
 def validateOutput(
     *,
     listFileBase: str,
-    updateBase: str,
+    outputPath: str,
     outfileSuffix: str,
     outputContentType: bool,
     outputHash: bool,
@@ -263,21 +259,21 @@ def validateOutput(
                 dividedPath = os.path.join(pdbId[0:2], pdbId[-6:-4], pdbId[-4:-2])
             if outputContentType and outputHash:
                 out = os.path.join(
-                    updateBase,
+                    outputPath,
                     contentType,
                     dividedPath,
                     "%s%s" % (pdbId, outfileSuffix),
                 )
             elif outputContentType:
                 out = os.path.join(
-                    updateBase, contentType, "%s%s" % (pdbId, outfileSuffix)
+                    outputPath, contentType, "%s%s" % (pdbId, outfileSuffix)
                 )
             elif outputContentType and outputHash:
                 out = os.path.join(
-                    updateBase, dividedPath, "%s%s" % (pdbId, outfileSuffix)
+                    outputPath, dividedPath, "%s%s" % (pdbId, outfileSuffix)
                 )
             else:
-                out = os.path.join(updateBase, "%s%s" % (pdbId, outfileSuffix))
+                out = os.path.join(outputPath, "%s%s" % (pdbId, outfileSuffix))
             if not os.path.exists(out):
                 missing.append(out)
     if len(missing) > 0:
@@ -292,12 +288,9 @@ def validateOutput(
 def removeRetractedEntries(
     *,
     listFileBase: str,
-    updateBase: str,
-    outputContentType: bool,
-    outputHash: bool,
+    outputPath: str,
 ) -> bool:
     removedFileName = "removed.txt"
-    removed = []
     t = time.time()
     infiles = []
     for filepath in glob.glob(os.path.join(listFileBase, "*core_ids*.txt")):
@@ -315,7 +308,7 @@ def removeRetractedEntries(
         .replace(".bcif.gz", "")
         .replace(".bcif", "")
         .upper(): str(path)
-        for path in pathlib.Path(updateBase).rglob("*.bcif*")
+        for path in pathlib.Path(outputPath).rglob("*.bcif*")
     }
     outcodes = set(outfiles.keys())
     obsoleted = outcodes.difference(infiles)
@@ -323,7 +316,7 @@ def removeRetractedEntries(
     filepaths = [outfiles[key] for key in obsoleted if key in outfiles]
     for filepath in filepaths:
         try:
-            if filepath.find(updateBase) >= 0:
+            if filepath.find(outputPath) >= 0:
                 os.unlink(filepath)
                 removed.append(filepath)
         except Exception as e:

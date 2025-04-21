@@ -19,7 +19,7 @@ with DAG(
     params = compose(config_name=dag.params['config_file'])
 
     route = int(params.settings.route)
-    list_file_base = params.paths.listFileBase
+    listFileBase = params.paths.listFileBase
 
-    start_task >> status_start(list_file_base) >> branching(route) >> [local_branch(params), sfapi_branch(), k8s_branch()] >> end_task >> status_complete(list_file_base)
+    start_task >> status_start(listFileBase) >> branching(route) >> [local_branch(params), sfapi_branch(), k8s_branch()] >> end_task >> status_complete(listFileBase)
 

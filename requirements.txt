@@ -1,5 +1,0 @@
-rcsb.db >= 1.801
-rcsb.utils.io
-mmcif
-requests
-

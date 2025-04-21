@@ -1,23 +1,22 @@
 settings:
     route: 0 # 0 local, 1 nersc, 2 kubernetes
-    incremental_update: True
-    out_file_suffix: .bcif.gz
-    num_sublist_files: 1
-    output_content_type: True
-    output_hash: True
-    input_hash: True
-    batch_size: 1
-    nfiles: 3
+    incrementalUpdate: True
+    outFileSuffix: .bcif.gz
+    numSublistFiles: 1
+    outputContentType: True
+    outputHash: True
+    inputHash: True # only for reading local files with hash rather than remote file downloads
+    batchSize: 1
+    nfiles: 3 # limit bcif conversions when testing
     sequential: True # for airflow sequential executor
 paths:
     listFileBase: /Users/jamessmith/airflow/in
     outputPath: /Users/jamessmith/airflow/out
-    config_path: /Users/jamessmith/airflow/config/bcifConfig.yml
+    configPath: /Users/jamessmith/airflow/config/bcifConfig.yml
 urls:
+    # set local path for local file reads
     pdbRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb/data/structures/divided/mmCIF/
     csmRemotePath: http://computed-models-external-east.rcsb.org/staging/
     ihmRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb_ihm/data/entries
     pdbHoldingsFilePath: http://prereleaseftp-external-east.rcsb.org/pdb/holdings/released_structures_last_modified_dates.json.gz
     csmHoldingsFilePath: http://computed-models-external-east.rcsb.org/staging/holdings/computed-models-holdings-list.json
-
-
