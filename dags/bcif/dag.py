@@ -1,3 +1,18 @@
+##
+# File:    dag.py
+# Author:  James Smith
+# Date:    21-Apr-2025
+##
+
+"""
+Airflow workflow DAG.
+"""
+
+__docformat__ = "google en"
+__author__ = "James Smith"
+__email__ = "james.smith@rcsb.org"
+__license__ = "Apache 2.0"
+
 from airflow.models.dag import DAG
 from hydra import compose, initialize
 from bcif.tasks import *

@@ -1,3 +1,18 @@
+##
+# File:    tasks.py
+# Author:  James Smith
+# Date:    21-Apr-2025
+##
+
+"""
+Airflow workflow tasks.
+"""
+
+__docformat__ = "google en"
+__author__ = "James Smith"
+__email__ = "james.smith@rcsb.org"
+__license__ = "Apache 2.0"
+
 from airflow.decorators import task, task_group
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.operators.empty import EmptyOperator
@@ -25,11 +40,11 @@ def local_branch(params):
         return makeDirs(listFileBase, outputPath, outputContentType)
 
     @task(task_id="split_tasks")
-    def split_tasks(pdbHoldingsFilePath: str, csmHoldingsFilePath: str, listFileBase: str, outputPath: str, incrementalUpdate: bool, outfileSuffix: str, numSublistFiles: int, configPath: str, outputContentType: bool, outputHash: bool, result: bool):
+    def split_tasks(pdbHoldingsFilePath: str, csmHoldingsFilePath: str, listFileBase: str, outputPath: str, incrementalUpdate: bool, outfileSuffix: str, numSublistFiles: int, configPath: str, outputContentType: bool, outputHash: bool, result: bool = None):
         return splitRemoteTaskLists(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash)
 
     @task(task_id="get_list_files")
-    def get_list_files(listFileBase: str, contentType: str, result: bool) -> bool:
+    def get_list_files(listFileBase: str, contentType: str, result: bool = None) -> bool:
         return getListFiles(listFileBase, contentType)
 
     @task(task_id="compute_bcif")
@@ -37,15 +52,15 @@ def local_branch(params):
         return computeBcif(listFileName, listFileBase, remotePath, outputPath, outfileSuffix, contentType, outputContentType, outputHash, inputHash, batchSize, nfiles)
 
     @task(task_id="validate_output")
-    def validate_output(listFileBase: str, outputPath: str, outfileSuffix: str, outputContentType: bool, outputHash: bool, result: bool) -> bool:
+    def validate_output(listFileBase: str, outputPath: str, outfileSuffix: str, outputContentType: bool, outputHash: bool, result: bool = None) -> bool:
         return validateOutput(listFileBase=listFileBase, outputPath=outputPath, outfileSuffix=outfileSuffix, outputContentType=outputContentType, outputHash=outputHash)
 
     @task(task_id="remove_retracted_entries")
-    def remove_retracted_entries(listFileBase: str, outputPath: str, result: bool) -> bool:
+    def remove_retracted_entries(listFileBase: str, outputPath: str, result: bool = None) -> bool:
         return removeRetractedEntries(listFileBase=listFileBase, outputPath=outputPath)
 
     @task(task_id="tasks_done")
-    def tasks_done(result: bool) -> bool:
+    def tasks_done(result: bool = None) -> bool:
         return tasksDone()
 
     listFileBase = params.paths.listFileBase
@@ -67,7 +82,7 @@ def local_branch(params):
 
     result1 = make_dirs(listFileBase, outputPath, outputContentType)
 
-    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result1)
+    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash)
 
     result3 = get_list_files(listFileBase, "pdb", result2)
 

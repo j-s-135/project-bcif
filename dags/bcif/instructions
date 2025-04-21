@@ -1,0 +1,47 @@
+local run:
+
+log into tunnelblick so that remote files are accessible
+
+clone github project-bcif repository
+
+make python virtual environment in project folder
+
+install apache airflow with pip (follow online instructions)
+
+cd to ~/airflow
+
+copy dags folder from github repo into ~/airflow
+
+cd dags
+
+pip3 install .
+
+clone py-rcsb_workflow repository
+
+cd py-rcsb_workflow
+
+modify requirements if necessary
+
+pip3 install .
+
+export PYTHONPATH=$PYTHONPATH:~/airflow/dags/py-rcsb_workflow
+
+cd ~/airflow
+
+start new terminal
+
+airflow scheduler
+
+start another terminal
+
+airflow webserver
+
+open browser to 127.0.0.1:8080
+
+run bcif
+
+start another terminal
+
+cd ~/airflow
+
+verify results in in-folder and out-folder
