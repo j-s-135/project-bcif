@@ -82,7 +82,7 @@ def local_branch(params):
 
     result1 = make_dirs(listFileBase, outputPath, outputContentType)
 
-    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash)
+    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result1)
 
     result3 = get_list_files(listFileBase, "pdb", result2)
 
