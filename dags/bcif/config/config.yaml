@@ -10,9 +10,9 @@ settings:
     nfiles: 3 # limit bcif conversions when testing
     sequential: True # for airflow sequential executor
 paths:
-    listFileBase: /Users/jamessmith/airflow/in
-    outputPath: /Users/jamessmith/airflow/out
-    configPath: /Users/jamessmith/airflow/config/bcifConfig.yml
+    listFileBase: /Users/jamessmith/Documents/github/project-bcif/in
+    outputPath: /Users/jamessmith/Documents/github/project-bcif/out
+    configPath: NA
 urls:
     # set local path for local file reads
     pdbRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb/data/structures/divided/mmCIF/
@@ -20,3 +20,4 @@ urls:
     ihmRemotePath: http://prereleaseftp-external-east.rcsb.org/pdb_ihm/data/entries
     pdbHoldingsFilePath: http://prereleaseftp-external-east.rcsb.org/pdb/holdings/released_structures_last_modified_dates.json.gz
     csmHoldingsFilePath: http://computed-models-external-east.rcsb.org/staging/holdings/computed-models-holdings-list.json
+    ihmHoldingsFilePath: http://prereleaseftp-external-east.rcsb.org/pdb_ihm/holdings/released_structures_last_modified_dates.json.gz

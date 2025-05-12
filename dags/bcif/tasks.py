@@ -68,8 +68,10 @@ def local_branch(params):
     configPath = params.paths.configPath
     pdbRemotePath = params.urls.pdbRemotePath
     csmRemotePath = params.urls.csmRemotePath
+    ihmRemotePath = params.urls.ihmRemotePath
     pdbHoldingsFilePath = params.urls.pdbHoldingsFilePath
     csmHoldingsFilePath = params.urls.csmHoldingsFilePath
+    ihmHoldingsFilePath = params.urls.ihmHoldingsFilePath
     incrementalUpdate = bool(params.settings.incrementalUpdate)
     outfileSuffix = params.settings.outFileSuffix
     numSublistFiles = int(params.settings.numSublistFiles)
@@ -82,7 +84,7 @@ def local_branch(params):
 
     result1 = make_dirs(listFileBase, outputPath, outputContentType)
 
-    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result1)
+    result2 = split_tasks(pdbHoldingsFilePath, csmHoldingsFilePath, ihmHoldingsFilePath, listFileBase, outputPath, incrementalUpdate, outfileSuffix, numSublistFiles, configPath, outputContentType, outputHash, result1)
 
     result3 = get_list_files(listFileBase, "pdb", result2)
 
@@ -106,11 +108,11 @@ def local_branch(params):
 
 
 @task_group
-def k8s_branch(*args, **kwargs):
+def k8s_branch():
     pass
 
 @task_group
-def sfapi_branch(*args, **kwargs):
+def sfapi_branch():
     pass
 
 end_task = EmptyOperator(

@@ -72,6 +72,7 @@ def branching_(r: int) -> str:
 def splitRemoteTaskLists(
     pdbHoldingsFilePath: str,
     csmHoldingsFilePath: str,
+    ihmHoldingsFilePath: str,
     listFileBase: str,
     outputPath: str,
     incrementalUpdate: bool,
@@ -81,6 +82,7 @@ def splitRemoteTaskLists(
     outputContentType: bool,
     outputHash: bool,
 ) -> bool:
+    # pdb
     holdingsFilePath = pdbHoldingsFilePath
     databaseName = "pdbx_core"
     result1 = splitRemoteTaskList(
@@ -95,6 +97,7 @@ def splitRemoteTaskLists(
         outputContentType,
         outputHash,
     )
+    # csm
     holdingsFilePath = csmHoldingsFilePath
     databaseName = "pdbx_comp_model_core"
     result2 = splitRemoteTaskList(
@@ -110,9 +113,9 @@ def splitRemoteTaskLists(
         outputHash,
     )
     if not result1:
-        logger.error("exp list failed to load")
+        logger.error("pdb list failed to load")
     if not result2:
-        logger.error("comp list failed to load")
+        logger.error("csm list failed to load")
     # enable skipping one or the other
     if result1 or result2:
         return True
@@ -168,21 +171,19 @@ def splitRemoteTaskList(
 
 
 def getListFiles(listFileBase: str, contentType: str) -> list:
-    filepaths = []
+    filenames = []
     if contentType == "pdb":
         files = os.listdir(listFileBase)
         for filename in files:
             if re.match(r"pdbx_core_ids-\d+.txt", filename):
-                filepath = os.path.join(listFileBase, filename)
-                filepaths.append(filepath)
+                filenames.append(filename)
     elif contentType == "csm":
         files = os.listdir(listFileBase)
         for filename in files:
             if re.match(r"pdbx_comp_model_core_ids-\d+.txt", filename):
-                filepath = os.path.join(listFileBase, filename)
-                filepaths.append(filepath)
-    logger.info("found %d file paths", len(filepaths))
-    return filepaths
+                filenames.append(filename)
+    logger.info("found %d file paths", len(filenames))
+    return filenames
 
 
 def computeBcif(

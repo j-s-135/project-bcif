@@ -6,7 +6,9 @@ clone github project-bcif repository
 
 make python virtual environment in project folder
 
-install apache airflow with pip (follow online instructions)
+activate environment
+
+install apache airflow with pip (follow online instructions, requires database credentials)
 
 cd to ~/airflow
 
@@ -14,15 +16,15 @@ copy dags folder from github repo into ~/airflow
 
 cd dags
 
-pip3 install .
+pip3 install . (still within virtual environment)
 
 clone py-rcsb_workflow repository
 
 cd py-rcsb_workflow
 
-modify requirements if necessary
+comment out unnecessary requirements for expedited build
 
-pip3 install .
+pip3 install . (still within virutal environment)
 
 export PYTHONPATH=$PYTHONPATH:~/airflow/dags/py-rcsb_workflow
 
@@ -30,9 +32,13 @@ cd ~/airflow
 
 start new terminal
 
+activate virtual environment again
+
 airflow scheduler
 
 start another terminal
+
+activate virtual environment again
 
 airflow webserver
 
